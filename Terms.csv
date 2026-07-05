@@ -1,0 +1,6 @@
+TermsID,TermsDescription,TermsDueDays
+1,Net due 10 days,10
+2,Net due 20 days,20
+3,Net due 30 days,30
+4,Net due 60 days,60
+5,Net due 90 days,90

@@ -1,0 +1,119 @@
+InvoiceID,InvoiceSequence,AccountNo,InvoiceLineItemAmount,InvoiceLineItemDescription
+1,1,553,3813.33,Freight
+2,1,553,40.2,Freight
+3,1,553,138.75,Freight
+4,1,553,144.7,Int'l shipment
+5,1,553,15.5,Freight
+6,1,553,42.75,Freight
+7,1,553,172.5,Freight
+8,1,522,95.0,Telephone service
+9,1,403,601.95,Cover design
+10,1,553,42.67,Freight
+11,1,553,42.5,Freight
+12,1,580,50.0,DiCicco's
+12,2,570,75.6,Kinko's
+12,3,570,58.4,Office Max
+12,4,540,478.0,Publishers Marketing
+13,1,522,16.33,Telephone (line 5)
+14,1,553,6.0,Freight out
+15,1,574,856.92,Property Taxes
+16,1,572,9.95,Monthly access fee
+17,1,553,10.0,Address correction
+18,1,553,104.0,Freight
+19,1,160,116.54,MVS Online Library
+20,1,553,6.0,Freight out
+21,1,589,4901.26,Office lease
+22,1,553,108.25,Freight
+23,1,572,9.95,Monthly access fee
+24,1,520,1750.0,Warehouse lease
+25,1,553,129.0,Freight
+26,1,553,10.0,Freight
+27,1,540,207.78,Prospect list
+28,1,553,109.5,Freight
+29,1,523,450.0,Back office additions
+30,1,553,63.4,Freight
+31,1,589,7125.34,Web site design
+32,1,403,953.1,Crash Course revision
+33,1,591,220.0,Form 571-L
+34,1,553,127.75,Freight
+35,1,507,1600.0,Income Tax
+36,1,403,565.15,Crash Course Ad
+37,1,553,36.0,Freight
+38,1,553,61.5,Freight
+39,1,400,37966.19,CICS Desk Reference
+40,1,403,639.77,Card deck
+41,1,553,53.75,Freight
+42,1,553,400.0,Freight
+43,1,400,21842.0,Book repro
+44,1,522,19.67,Telephone (Line 3)
+45,1,553,2765.36,Freight
+46,1,510,224.0,Health Insurance
+47,1,572,1575.0,Catalog ad
+48,1,553,33.0,Freight
+49,1,522,16.33,Telephone (line 6)
+50,1,510,116.0,Health Insurance
+51,1,553,2184.11,Freight
+52,1,160,1083.58,MSDN
+53,1,522,46.21,Telephone (Line 1)
+54,1,403,313.55,Card revision
+55,1,553,40.75,Freight
+56,1,572,2433.0,Card deck
+57,1,589,1367.5,401K Contributions
+58,1,553,53.25,Freight
+59,1,553,13.75,Freight
+60,1,553,2312.2,Freight
+61,1,553,25.67,Freight out
+62,1,553,26.75,Freight
+63,1,553,2115.81,Freight
+64,1,553,23.5,Freight
+65,1,400,6940.25,OS Utilities
+66,1,553,31.95,Freight
+67,1,553,1927.54,Freight
+68,1,160,936.93,Quarterly Maintenance
+69,1,540,175.0,Card deck advertising
+70,1,553,6.0,Freight
+71,1,553,108.5,Freight
+72,1,553,10.0,Address correction
+73,1,552,290.0,International pkg.
+74,1,570,41.8,Coffee
+75,1,553,27.0,Freight
+76,1,553,241.0,Int'l shipment
+77,1,403,904.14,Cover design
+78,1,403,1197.0,Cover design
+78,2,540,765.13,Catalog design
+79,1,540,2184.5,PC card deck
+80,1,553,2318.03,Freight
+81,1,553,26.25,Freight
+82,1,150,17.5,Supplies
+83,1,522,39.77,Telephone (Line 2)
+84,1,553,111.0,Freight
+85,1,553,158.0,Int'l shipment
+86,1,553,739.2,Freight
+87,1,553,60.0,Freight
+88,1,553,147.25,Freight
+89,1,400,85.31,Book copy
+90,1,553,38.75,Freight
+91,1,522,32.7,Telephone (line 4)
+92,1,521,16.62,Propane-forklift
+93,1,553,162.75,International shipment
+94,1,553,52.25,Freight
+95,1,572,600.0,Books for research
+96,1,400,26881.4,MVS JCL
+97,1,170,356.48,Network wiring
+98,1,572,579.42,Catalog ad
+99,1,553,59.97,Freight
+100,1,553,67.92,Freight
+101,1,553,30.75,Freight
+102,1,400,20551.18,CICS book printing
+103,1,553,2051.59,Freight
+104,1,553,44.44,Freight
+105,1,582,503.2,Bronco lease
+106,1,400,23517.58,DB2 book printing
+107,1,553,3689.99,Freight
+108,1,553,67.0,Freight
+109,1,403,1000.46,Crash Course covers
+110,1,540,90.36,Card deck advertising
+111,1,553,22.57,Freight
+112,1,400,10976.06,VSAM book printing
+113,1,510,224.0,Health Insurance
+114,1,553,127.75,Freight
