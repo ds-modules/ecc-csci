@@ -55,11 +55,11 @@ cells = []
 cells.append(md("# Introduction to Jupyter, Python, Pandas, and Polars for SQL Students"))
 cells.append(md(f"{HR}\n\n{HR_GOLD}\n\n## 1. Welcome"))
 cells.append(md(
-    "You've spent about eight weeks learning **SQL** — how to retrieve data with "
+    "You've spent about eight weeks learning **SQL** - how to retrieve data with "
     "`SELECT`, filter with `WHERE`, summarize with `GROUP BY`, and combine tables with `JOIN`.\n\n"
     "This notebook will bridge your SQL knowledge into Python data analysis using **Pandas** and **Polars**.\n\n"
-    "We use the **AP (Accounts Payable)** database from your SQL course — vendors, invoices, "
-    "payment terms, and general-ledger accounts — stored as CSV files in this project folder."
+    "We use the **AP (Accounts Payable)** database from your SQL course - vendors, invoices, "
+    "payment terms, and general-ledger accounts - stored as CSV files in this project folder."
 ))
 
 cells.append(md(
@@ -88,14 +88,14 @@ cells.append(md(
     "| **Code** | Python you can run and re-run |\n\n"
     "**Running a cell:** Click a cell and press `Shift + Enter` (runs and moves down) or "
     "`Ctrl/Cmd + Enter` (runs in place).\n\n"
-    "**Restart & Run All:** `Kernel → Restart & Run All` re-runs every cell from the top — "
+    "**Restart & Run All:** `Kernel → Restart & Run All` re-runs every cell from the top - "
     "useful after editing earlier cells.\n\n"
     "**Useful shortcuts:**\n"
-    "- `A` — insert cell above (command mode)\n"
-    "- `B` — insert cell below\n"
-    "- `D, D` — delete cell\n"
-    "- `M` — change cell to Markdown\n"
-    "- `Y` — change cell to Code"
+    "- `A` - insert cell above (command mode)\n"
+    "- `B` - insert cell below\n"
+    "- `D, D` - delete cell\n"
+    "- `M` - change cell to Markdown\n"
+    "- `Y` - change cell to Code"
 ))
 
 cells.append(md("**Exercise:** Run the cell below. You should see a greeting printed."))
@@ -124,7 +124,7 @@ cells.append(code('print(type(invoice_total))\nprint(len("Invoices"))'))
 cells.append(md(
     "## Importing Libraries\n\n"
     "> **Kernel check:** If imports fail, use **Kernel → Change Kernel** and select "
-    "**Python (ecc-csci)** or your project's `.venv` interpreter — not the system Python.\n\n"
+    "**Python (ecc-csci)** or your project's `.venv` interpreter - not the system Python.\n\n"
     "**Pandas** and **Polars** are imported with standard aliases:"
 ))
 cells.append(code("import pandas as pd\nimport polars as pl\nimport numpy as np\n\nprint(pd.__version__)"))
@@ -138,7 +138,7 @@ practice_question(
 # --- Section 4: DataFrames ---
 section_start(4, "Introducing DataFrames")
 cells.append(md(
-    "In SQL, data lives in **tables**. In Python, the equivalent is a **DataFrame** — "
+    "In SQL, data lives in **tables**. In Python, the equivalent is a **DataFrame** - "
     "a table with **rows**, **columns**, **column names**, and **data types**.\n\n"
     "```\n"
     "Database Table  →  DataFrame\n"
@@ -182,10 +182,10 @@ section_start(5, "SQL Review (Quick Refresher)")
 cells.append(md(
     "This is a **refresher**, not a re-teach. We'll use the AP schema throughout.\n\n"
     "**Key tables:**\n"
-    "- `Vendors` — companies we pay (`VendorID`, `VendorName`, `VendorState`, …)\n"
-    "- `Invoices` — bills received (`InvoiceID`, `VendorID`, `InvoiceTotal`, `TermsID`, …)\n"
-    "- `Terms` — payment terms (`TermsID`, `TermsDescription`, `TermsDueDays`)\n"
-    "- `GLAccounts` — chart of accounts (`AccountNo`, `AccountDescription`)\n\n"
+    "- `Vendors` - companies we pay (`VendorID`, `VendorName`, `VendorState`, …)\n"
+    "- `Invoices` - bills received (`InvoiceID`, `VendorID`, `InvoiceTotal`, `TermsID`, …)\n"
+    "- `Terms` - payment terms (`TermsID`, `TermsDescription`, `TermsDueDays`)\n"
+    "- `GLAccounts` - chart of accounts (`AccountNo`, `AccountDescription`)\n\n"
     "| SQL clause | What it does | AP example |\n"
     "|------------|--------------|------------|\n"
     "| `SELECT` | Choose columns | vendor names |\n"
@@ -244,7 +244,7 @@ cells.append(md(
     "```sql\n"
     "SELECT * FROM Invoices WHERE InvoiceTotal > 10000;\n"
     "```\n\n"
-    "**Pandas:** Boolean indexing — pass a condition inside `[]`."
+    "**Pandas:** Boolean indexing - pass a condition inside `[]`."
 ))
 cells.append(code("invoices_pd[invoices_pd[\"InvoiceTotal\"] > 10000].head()"))
 practice_question(
@@ -402,7 +402,7 @@ cells.append(md(
 ))
 
 cells.append(md(
-    "## Selecting Columns — `select()`\n\n"
+    "## Selecting Columns - `select()`\n\n"
     "```sql\n"
     "SELECT VendorName, VendorState FROM Vendors;\n"
     "```"
@@ -414,7 +414,7 @@ practice_question(
 )
 
 cells.append(md(
-    "## Filtering — `filter()`\n\n"
+    "## Filtering - `filter()`\n\n"
     "```sql\n"
     "SELECT * FROM Invoices WHERE InvoiceTotal > 10000;\n"
     "```"
@@ -426,7 +426,7 @@ practice_question(
 )
 
 cells.append(md(
-    "## New Columns — `with_columns()`\n\n"
+    "## New Columns - `with_columns()`\n\n"
     "```sql\n"
     "SELECT InvoiceTotal - PaymentTotal AS BalanceDue FROM Invoices;\n"
     "```"
@@ -444,7 +444,7 @@ practice_question(
 )
 
 cells.append(md(
-    "## Group By — `group_by()` + `agg()`\n\n"
+    "## Group By - `group_by()` + `agg()`\n\n"
     "```sql\n"
     "SELECT TermsID, AVG(InvoiceTotal) FROM Invoices GROUP BY TermsID;\n"
     "```"
@@ -463,7 +463,7 @@ practice_question(
 )
 
 cells.append(md(
-    "## Sort — `sort()`\n\n"
+    "## Sort - `sort()`\n\n"
     "```sql\n"
     "SELECT * FROM Invoices ORDER BY InvoiceTotal DESC;\n"
     "```"
@@ -475,7 +475,7 @@ practice_question(
 )
 
 cells.append(md(
-    "## Distinct — `unique()`\n\n"
+    "## Distinct - `unique()`\n\n"
     "```sql\n"
     "SELECT DISTINCT VendorState FROM Vendors;\n"
     "```"
@@ -487,7 +487,7 @@ practice_question(
 )
 
 cells.append(md(
-    "## Head — `head()`\n\n"
+    "## Head - `head()`\n\n"
     "```sql\n"
     "SELECT TOP 5 * FROM Vendors;\n"
     "```"
@@ -499,7 +499,7 @@ practice_question(
 )
 
 cells.append(md(
-    "## Joins — `join()`\n\n"
+    "## Joins - `join()`\n\n"
     "```sql\n"
     "SELECT v.VendorName, i.InvoiceTotal\n"
     "FROM Invoices i JOIN Vendors v ON i.VendorID = v.VendorID;\n"
@@ -520,7 +520,7 @@ practice_question(
 )
 
 # --- Section 8: Comparison ---
-section_start(8, "Pandas vs Polars — Side-by-Side")
+section_start(8, "Pandas vs Polars - Side-by-Side")
 cells.append(md(
     "| Operation | SQL | Pandas | Polars |\n"
     "|-----------|-----|--------|--------|\n"
@@ -534,13 +534,13 @@ cells.append(md(
     "| Sort | `ORDER BY col DESC` | `df.sort_values(\"col\", ascending=False)` | `df.sort(\"col\", descending=True)` |\n\n"
     "> **When to use which?** Pandas has the largest ecosystem and most tutorials. "
     "Polars is often faster and has a cleaner API for chained transformations. "
-    "Both are valuable — learn Pandas first, then add Polars."
+    "Both are valuable - learn Pandas first, then add Polars."
 ))
 
 # --- Section 9: Practice Problems ---
 section_start(9, "Practice Problems")
 cells.append(md(
-    "Use **either Pandas or Polars** (your choice). Work through these in order — "
+    "Use **either Pandas or Polars** (your choice). Work through these in order - "
     "each builds on SQL skills you already have.\n\n"
     "Data files: `Vendors.csv`, `Invoices.csv`, `Terms.csv`, `GLAccounts.csv`, `InvoiceLineItems.csv`"
 ))
@@ -618,7 +618,7 @@ cells.append(md(
         'report'
     )
 ))
-cells.append(code("# Mini challenge — your solution\n"))
+cells.append(code("# Mini challenge - your solution\n"))
 
 # Optional viz
 cells.append(md(
@@ -655,7 +655,7 @@ cells.append(md(
 # --- Section 12: Cheat Sheet ---
 section_start(12, "Cheat Sheet")
 cells.append(md(
-    "Bookmark this page — return here when translating SQL to Python.\n\n"
+    "Bookmark this page - return here when translating SQL to Python.\n\n"
     "| Task | SQL | Pandas | Polars |\n"
     "|------|-----|--------|--------|\n"
     "| Load CSV | *(external)* | `pd.read_csv(\"file.csv\")` | `pl.read_csv(\"file.csv\")` |\n"
