@@ -444,8 +444,10 @@ def section_cells():
     out.append(
         md_block(
             "Org charts are **hierarchical**: each employee may report to a manager, who reports to another manager.\n\n"
-            "SQL solves this with a **recursive CTE**. **pandas and Polars do not have recursive CTE syntax** — "
-            "you express the same idea with a clear loop (or repeated joins) in Python."
+            "SQL solves this with a **recursive CTE**.\n\n"
+            "**Important:** pandas and Polars do **not** provide SQL-style recursive CTE syntax. "
+            "The Python below is an **equivalent algorithm**, not a direct syntax translation: "
+            "we reproduce the recursive process using **repeated joins inside a Python loop**."
         )
     )
 
@@ -456,7 +458,7 @@ def section_cells():
             "|--------|---------|\n"
             "| `EmployeeID` | Unique employee key |\n"
             "| `LastName`, `FirstName` | Name parts |\n"
-            "| `TitleID` | Job title key (not used in the hierarchy walk) |\n"
+            "| `DeptNo` | Department number (kept in the result for comparison) |\n"
             "| `ManagerID` | EmployeeID of this person's manager (`NULL` = top of tree) |"
         )
     )
@@ -477,7 +479,7 @@ def section_cells():
             "\n"
             "employees_hier = pd.DataFrame(\n"
             "    employee_data,\n"
-            '    columns=["EmployeeID", "LastName", "FirstName", "TitleID", "ManagerID"],\n'
+            '    columns=["EmployeeID", "LastName", "FirstName", "DeptNo", "ManagerID"],\n'
             ")\n"
             "employees_hier"
         )
@@ -494,7 +496,9 @@ def section_cells():
             "        EmployeeID,\n"
             "        LastName,\n"
             "        FirstName,\n"
+            "        DeptNo,\n"
             "        ManagerID,\n"
+            "        FirstName + ' ' + LastName AS EmployeeName,\n"
             "        1 AS Rank\n"
             "    FROM Employees\n"
             "    WHERE ManagerID IS NULL\n"
@@ -506,31 +510,39 @@ def section_cells():
             "        e.EmployeeID,\n"
             "        e.LastName,\n"
             "        e.FirstName,\n"
+            "        e.DeptNo,\n"
             "        e.ManagerID,\n"
+            "        e.FirstName + ' ' + e.LastName AS EmployeeName,\n"
             "        c.Rank + 1 AS Rank\n"
             "    FROM Employees AS e\n"
             "    JOIN EmployeesCTE AS c\n"
             "      ON e.ManagerID = c.EmployeeID\n"
             ")\n"
-            "SELECT\n"
-            "    Rank,\n"
-            "    EmployeeID,\n"
-            "    LastName + ', ' + FirstName AS EmployeeName,\n"
-            "    ManagerID\n"
+            "SELECT *\n"
             "FROM EmployeesCTE\n"
             "ORDER BY Rank, EmployeeID;\n"
             "```\n\n"
             "- **Base case:** start with rows where `ManagerID IS NULL` and set `Rank = 1`\n"
             "- **Recursive case:** find employees whose `ManagerID` matches an `EmployeeID` already found; "
             "set `Rank = manager Rank + 1`\n"
-            "- Repeat until no new reports are found"
+            "- Repeat until no new reports are found\n"
+            "- Final result uses `FirstName + ' ' + LastName AS EmployeeName` and keeps `DeptNo` "
+            "so you can compare to the original table"
         )
     )
 
     out.append(
         md_block(
-            "#### pandas: `build_employee_hierarchy()`\n\n"
-            "A beginner-readable `while` loop mirrors the CTE: start at the top, then keep attaching direct reports."
+            "#### pandas: `build_employee_hierarchy()` — equivalent algorithm, not built-in syntax\n\n"
+            "`build_employee_hierarchy()` is a **custom function we write**, not a built-in pandas operation. "
+            "It mirrors the recursive CTE step by step: start at the top, then keep attaching direct reports "
+            "with joins in a `while` loop.\n\n"
+            "| Recursive CTE component | Python equivalent |\n"
+            "|-------------------------|-------------------|\n"
+            "| Anchor query | Select rows with `ManagerID.isna()` |\n"
+            "| Recursive query | Join employees to the previous level |\n"
+            "| `UNION ALL` | Append each discovered level |\n"
+            "| Stop condition | No additional employees are found |"
         )
     )
 
@@ -559,9 +571,13 @@ def section_cells():
             "        current = nxt\n"
             "\n"
             "    hierarchy = pd.concat(levels, ignore_index=True)\n"
-            '    hierarchy["EmployeeName"] = hierarchy["LastName"] + ", " + hierarchy["FirstName"]\n'
+            '    hierarchy["EmployeeName"] = (\n'
+            '        hierarchy["FirstName"] + " " + hierarchy["LastName"]\n'
+            "    )\n"
             "    hierarchy = hierarchy.sort_values([\"Rank\", \"EmployeeID\"]).reset_index(drop=True)\n"
-            '    return hierarchy[["Rank", "EmployeeID", "EmployeeName", "ManagerID"]]\n'
+            "    return hierarchy[\n"
+            '        ["Rank", "EmployeeID", "EmployeeName", "DeptNo", "ManagerID"]\n'
+            "    ]\n"
             "\n"
             "\n"
             "hierarchy = build_employee_hierarchy(employees_hier)\n"
@@ -574,10 +590,9 @@ def section_cells():
     out.append(
         md_block(
             "#### Polars note\n\n"
-            "Polars also has **no recursive CTE**. You can run the **same Python `while` loop** and use "
-            "Polars only for filters/joins inside each step, or convert with `pl.DataFrame(hierarchy.to_dict(orient="list"))` "
-            "after the pandas function finishes.\n\n"
-            "Keeping the loop in plain Python is usually clearer for this topic."
+            "Polars also has **no recursive CTE syntax**. Use the **same custom loop algorithm** "
+            "(or convert the pandas result with `pl.DataFrame(hierarchy.to_dict(orient=\"list\"))`). "
+            "There is still no built-in recursive hierarchy helper — the loop is the translation of the CTE idea."
         )
     )
 
@@ -595,7 +610,7 @@ def section_cells():
             "(find Robert's `EmployeeID` in the table). "
             "Rebuild the hierarchy and report the new employee's **Rank**.\n\n"
             "Suggested new row: `EmployeeID=10`, `LastName=\"Nguyen\"`, `FirstName=\"Alex\"`, "
-            "`TitleID=2`, `ManagerID=<Robert's EmployeeID>`.\n\n"
+            "`DeptNo=2`, `ManagerID=<Robert's EmployeeID>`.\n\n"
             "*Write your answer in the cell below.*",
             "robert_id = employees_hier.loc[\n"
             '    (employees_hier["LastName"] == "Aaronsen")\n'
@@ -611,7 +626,7 @@ def section_cells():
             '                "EmployeeID": 10,\n'
             '                "LastName": "Nguyen",\n'
             '                "FirstName": "Alex",\n'
-            '                "TitleID": 2,\n'
+            '                "DeptNo": 2,\n'
             '                "ManagerID": robert_id,\n'
             "            }]\n"
             "        ),\n"
