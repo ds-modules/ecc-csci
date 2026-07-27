@@ -53,11 +53,13 @@ cells = []
 
 # --- Section 1: Welcome ---
 cells.append(md("# Introduction to Jupyter, Python, Pandas, and Polars for SQL Students"))
-cells.append(md(f"{HR}\n\n{HR_GOLD}\n\n## 1. Welcome"))
+cells.append(md(f"{HR}\n\n{HR_GOLD}\n\n## Welcome"))
 cells.append(md(
     "You've spent about eight weeks learning **SQL** - how to retrieve data with "
     "`SELECT`, filter with `WHERE`, summarize with `GROUP BY`, and combine tables with `JOIN`.\n\n"
-    "This notebook will bridge your SQL knowledge into Python data analysis using **Pandas** and **Polars**.\n\n"
+    "This notebook will bridge your SQL knowledge into Python data analysis.\n\n"
+    "**Pandas is the primary library for this module.** Polars examples are included as a "
+    "**modern comparison**. You are **not** expected to memorize both syntaxes.\n\n"
     "We use the **AP (Accounts Payable)** database from your SQL course - vendors, invoices, "
     "payment terms, and general-ledger accounts - stored as CSV files in this project folder."
 ))
@@ -66,19 +68,42 @@ cells.append(md(
     "## Learning Objectives\n\n"
     "By the end of this notebook, you should be able to:\n\n"
     "- Navigate and run cells in a Jupyter notebook\n"
-    "- Load tabular data into **DataFrames** with Pandas and Polars\n"
-    "- Translate common SQL operations into Pandas syntax\n"
-    "- Translate the same operations into Polars syntax\n"
+    "- Load tabular data into **DataFrames** with **Pandas** (primary)\n"
+    "- Translate common SQL operations into **Pandas** syntax\n"
+    "- Recognize **Polars** as a modern alternative (optional comparison — you do not need to memorize it)\n"
+    "- Use advanced SQL ideas in **Pandas**: **outer joins**, **set operations**, **subqueries**, and **hierarchical (recursive) data**\n"
     "- Explain why Python is commonly used **after** SQL in data workflows"
 ))
 
 cells.append(md(
     "> **How to use this notebook:** Read each short section, run the code cell immediately "
-    "below it, and try the practice question before expanding the **Solution** section to check your work."
+    "below it, and try the practice question before expanding the **Solution** section to check your work.\n\n"
+    "> **Pandas vs Polars:** Complete all **Practice** exercises in **Pandas**. Polars cells and any prompt "
+    "marked **Try this in Polars (optional)** are for curiosity and comparison only — skip them if you want "
+    "to focus on one Python library."
+))
+
+
+# --- Table of Contents ---
+cells.append(md(
+    f"{HR}\n\n## Table of Contents\n\n"
+    "1. [Jupyter Basics](#1-jupyter-basics)\n"
+    "2. [Python Basics](#2-python-basics)\n"
+    "3. [Loading Data](#3-loading-data)\n"
+    "4. [SQL to Pandas](#4-sql-to-pandas)\n"
+    "5. [SQL to Polars](#5-sql-to-polars) *(optional comparison)*\n"
+    "6. [Advanced SQL Translations](#6-advanced-sql-translations)\n"
+    "   - [6.1 Outer Joins](#61-outer-joins)\n"
+    "   - [6.2 Set Operations](#62-set-operations)\n"
+    "   - [6.3 Subqueries](#63-subqueries)\n"
+    "   - [6.4 Recursive CTEs](#64-recursive-ctes)\n"
+    "7. [Practice](#7-practice)\n"
+    "8. [Reference Guide](#8-reference-guide)\n\n"
+    "> Tip: In Jupyter, you can also use the **Table of Contents** sidebar / outline if your interface provides one."
 ))
 
 # --- Section 2: Jupyter Basics ---
-section_start(2, "Jupyter Notebook Basics")
+section_start(1, "Jupyter Basics")
 cells.append(md(
     "A **Jupyter notebook** mixes explanatory text (Markdown) with runnable **code cells**. "
     "Each cell runs independently, which makes exploration easy.\n\n"
@@ -102,7 +127,7 @@ cells.append(md("**Exercise:** Run the cell below. You should see a greeting pri
 cells.append(code('print("Hello from Jupyter! You ran your first cell.")'))
 
 # --- Section 3: Python Essentials ---
-section_start(3, "Python Essentials (Just Enough)")
+section_start(2, "Python Basics")
 cells.append(md(
     "We only cover Python concepts you'll use in this notebook. No loops, classes, or file writing."
 ))
@@ -136,7 +161,7 @@ practice_question(
 )
 
 # --- Section 4: DataFrames ---
-section_start(4, "Introducing DataFrames")
+section_start(3, "Loading Data")
 cells.append(md(
     "In SQL, data lives in **tables**. In Python, the equivalent is a **DataFrame** - "
     "a table with **rows**, **columns**, **column names**, and **data types**.\n\n"
@@ -178,7 +203,7 @@ practice_question(
 )
 
 # --- Section 5: SQL Review ---
-section_start(5, "SQL Review (Quick Refresher)")
+cells.append(md(f"{HR}\n\n## SQL Review"))
 cells.append(md(
     "This is a **refresher**, not a re-teach. We'll use the AP schema throughout.\n\n"
     "**Key tables:**\n"
@@ -216,7 +241,7 @@ cells.append(md(
 ))
 
 # --- Section 6: SQL → Pandas ---
-section_start(6, "SQL → Pandas")
+section_start(4, "SQL to Pandas")
 cells.append(md(
     "For each SQL concept: **SQL → Pandas → explanation → practice**.\n\n"
     "We'll use `vendors_pd` and `invoices_pd` loaded earlier."
@@ -393,12 +418,14 @@ practice_question(
 )
 
 # --- Section 7: SQL → Polars ---
-section_start(7, "SQL → Polars")
+section_start(5, "SQL to Polars")
 cells.append(md(
+    "**Optional comparison section.** Pandas remains the required library for this module.\n\n"
     "Polars uses a **method-chaining** style that reads similarly to SQL. "
     "It is newer, often **faster on large datasets**, and increasingly used in modern data science "
     "(including newer Berkeley Data Science curriculum).\n\n"
-    "Same pattern: SQL → Polars → practice."
+    "You do **not** need to memorize Polars syntax. Skim the examples, then attempt the "
+    "**Try this in Polars (optional)** prompts only if you want extra practice."
 ))
 
 cells.append(md(
@@ -409,7 +436,7 @@ cells.append(md(
 ))
 cells.append(code('vendors_pl.select("VendorName", "VendorState").head()'))
 practice_question(
-    "**Practice:** Select `InvoiceID` and `InvoiceTotal` from `invoices_pl`.",
+    "**Try this in Polars (optional):** Select `InvoiceID` and `InvoiceTotal` from `invoices_pl`.",
     'invoices_pl.select("InvoiceID", "InvoiceTotal").head()',
 )
 
@@ -421,7 +448,7 @@ cells.append(md(
 ))
 cells.append(code('invoices_pl.filter(pl.col("InvoiceTotal") > 10000).head()'))
 practice_question(
-    "**Practice:** Filter vendors where `VendorState` is `'TN'`.",
+    "**Try this in Polars (optional):** Filter vendors where `VendorState` is `'TN'`.",
     'vendors_pl.filter(pl.col("VendorState") == "TN")',
 )
 
@@ -437,7 +464,7 @@ cells.append(code(
     ').select("InvoiceID", "InvoiceTotal", "PaymentTotal", "BalanceDue").head()'
 ))
 practice_question(
-    "**Practice:** Add a column `DoubleTotal` = `InvoiceTotal * 2`.",
+    "**Try this in Polars (optional):** Add a column `DoubleTotal` = `InvoiceTotal * 2`.",
     'invoices_pl.with_columns(\n'
     '    (pl.col("InvoiceTotal") * 2).alias("DoubleTotal")\n'
     ').select("InvoiceID", "InvoiceTotal", "DoubleTotal").head()',
@@ -456,7 +483,7 @@ cells.append(code(
     ')'
 ))
 practice_question(
-    "**Practice:** Count vendors per `VendorState`, sorted by count descending.",
+    "**Try this in Polars (optional):** Count vendors per `VendorState`, sorted by count descending.",
     'vendors_pl.group_by("VendorState").agg(\n'
     '    pl.len().alias("NumVendors")\n'
     ').sort("NumVendors", descending=True)',
@@ -470,7 +497,7 @@ cells.append(md(
 ))
 cells.append(code('invoices_pl.sort("InvoiceTotal", descending=True).head(5)'))
 practice_question(
-    "**Practice:** Sort `terms_pl` by `TermsDueDays` ascending.",
+    "**Try this in Polars (optional):** Sort `terms_pl` by `TermsDueDays` ascending.",
     'terms_pl.sort("TermsDueDays")',
 )
 
@@ -482,7 +509,7 @@ cells.append(md(
 ))
 cells.append(code('vendors_pl.select("VendorState").unique().sort("VendorState")'))
 practice_question(
-    "**Practice:** Get unique `TermsID` values from `invoices_pl`.",
+    "**Try this in Polars (optional):** Get unique `TermsID` values from `invoices_pl`.",
     'invoices_pl.select("TermsID").unique()',
 )
 
@@ -494,7 +521,7 @@ cells.append(md(
 ))
 cells.append(code('vendors_pl.head(5)'))
 practice_question(
-    "**Practice:** Show the top 3 rows of `terms_pl`.",
+    "**Try this in Polars (optional):** Show the top 3 rows of `terms_pl`.",
     'terms_pl.head(3)',
 )
 
@@ -513,36 +540,36 @@ cells.append(code(
     ').select("VendorName", "InvoiceNumber", "InvoiceTotal").head()'
 ))
 practice_question(
-    "**Practice:** Join invoices with terms; show `InvoiceID`, `InvoiceTotal`, `TermsDescription`.",
+    "**Try this in Polars (optional):** Join invoices with terms; show `InvoiceID`, `InvoiceTotal`, `TermsDescription`.",
     'invoices_pl.join(terms_pl, on="TermsID").select(\n'
     '    "InvoiceID", "InvoiceTotal", "TermsDescription"\n'
     ').head()',
 )
 
-# --- Section 8: Comparison ---
-section_start(8, "Pandas vs Polars - Side-by-Side")
+# --- Section 8: Advanced recap (full reference table is in the Cheat Sheet) ---
+cells.append(md("### Advanced Section Recap"))
 cells.append(md(
-    "| Operation | SQL | Pandas | Polars |\n"
-    "|-----------|-----|--------|--------|\n"
-    "| Select columns | `SELECT col1, col2` | `df[[\"col1\", \"col2\"]]` | `df.select(\"col1\", \"col2\")` |\n"
-    "| Filter rows | `WHERE col > 10` | `df[df[\"col\"] > 10]` | `df.filter(pl.col(\"col\") > 10)` |\n"
-    "| Group & aggregate | `GROUP BY ... AVG()` | `df.groupby(\"col\").mean()` | `df.group_by(\"col\").agg(...)` |\n"
-    "| Count | `COUNT(*)` | `df.groupby(...).size()` | `pl.len()` or `.count()` |\n"
-    "| Limit rows | `TOP 5` / `LIMIT 5` | `df.head(5)` | `df.head(5)` |\n"
-    "| Distinct | `SELECT DISTINCT col` | `df[\"col\"].unique()` | `df.select(\"col\").unique()` |\n"
-    "| Join | `JOIN ... ON` | `pd.merge(df1, df2, on=...)` | `df1.join(df2, on=...)` |\n"
-    "| Sort | `ORDER BY col DESC` | `df.sort_values(\"col\", ascending=False)` | `df.sort(\"col\", descending=True)` |\n\n"
-    "> **When to use which?** Pandas has the largest ecosystem and most tutorials. "
-    "Polars is often faster and has a cleaner API for chained transformations. "
-    "Both are valuable - learn Pandas first, then add Polars."
+    "In **Section 6** you translated four advanced SQL topics into Python:\n\n"
+    "- **Outer joins** — keep unmatched rows from one or both tables "
+    "(`LEFT JOIN`, `RIGHT JOIN`, `FULL OUTER JOIN`)\n"
+    "- **Set operations** — combine result sets row-by-row (`UNION`, `INTERSECT`, `EXCEPT`); "
+    "SQL compares **complete rows**\n"
+    "- **Subqueries** — nested filters become intermediate DataFrames, scalars, or per-group values "
+    "(`transform()` / `.over()`)\n"
+    "- **Recursive CTEs** — hierarchical walks become a **custom loop** with repeated joins "
+    "(not built-in pandas/Polars syntax)\n\n"
+    "> **Quick lookup:** **Section 8 — Reference Guide** has the SQL ↔ **pandas** reference "
+    "(with Polars shown for comparison). Use the **Pandas** column when completing required practice."
 ))
 
 # --- Section 9: Practice Problems ---
-section_start(9, "Practice Problems")
+section_start(7, "Practice")
 cells.append(md(
-    "Use **either Pandas or Polars** (your choice). Work through these in order - "
+    "Complete these problems in **Pandas** (required). Work through them in order — "
     "each builds on SQL skills you already have.\n\n"
-    "Data files: `Vendors.csv`, `Invoices.csv`, `Terms.csv`, `GLAccounts.csv`, `InvoiceLineItems.csv`"
+    "Data files: `Vendors.csv`, `Invoices.csv`, `Terms.csv`, `GLAccounts.csv`, `InvoiceLineItems.csv`\n\n"
+    "> **Optional:** After finishing a problem in Pandas, you may **Try this in Polars** using the matching "
+    "`*_pl` DataFrames — but that is not required for the module."
 ))
 
 problems = [
@@ -600,12 +627,12 @@ for prob, sol in problems:
     practice_question(prob, sol, "# Your solution here\n")
 
 # --- Section 10: Mini Challenge ---
-section_start(10, "Mini Challenge")
+cells.append(md("### Mini Challenge"))
 cells.append(md(
     "The **AP manager** wants a report showing the **average invoice total for every payment term**, "
     "sorted from **highest average to lowest**, including the term description.\n\n"
     "Expected columns: `TermsDescription`, `AvgInvoiceTotal`\n\n"
-    "Complete this using Pandas or Polars in the cell below.\n\n"
+    "Complete this in **Pandas** (required) in the cell below. Trying the same report in Polars is optional.\n\n"
     + solution_block(
         '# Pandas solution\n'
         'report = (\n'
@@ -637,23 +664,8 @@ cells.append(code(
     'plt.show()'
 ))
 
-# --- Section 11: Why Polars ---
-section_start(11, "Why Learn Polars?")
-cells.append(md(
-    "**Performance.** Polars is written in Rust and uses parallel execution. On datasets with "
-    "millions of rows, it is often significantly faster than Pandas.\n\n"
-    "**Modern data science.** New tools and courses (including updated Berkeley Data Science "
-    "material) are introducing Polars alongside Pandas.\n\n"
-    "**Growing adoption.** Companies handling large-scale analytics increasingly evaluate Polars "
-    "for ETL and exploratory analysis pipelines.\n\n"
-    "**Industry relevance.** SQL remains the language of databases; Pandas remains the most common "
-    "Python tabular library; Polars is the fast, modern alternative worth knowing.\n\n"
-    "**Practical advice:** Master SQL first (done!). Add Pandas for the Python ecosystem. "
-    "Learn Polars when you need speed or cleaner chained expressions. All three skills complement each other."
-))
-
 # --- Section 12: Cheat Sheet ---
-section_start(12, "Cheat Sheet")
+section_start(8, "Reference Guide")
 cells.append(md(
     "Bookmark this page - return here when translating SQL to Python.\n\n"
     "| Task | SQL | Pandas | Polars |\n"
@@ -672,8 +684,24 @@ cells.append(md(
     "| Null check | `WHERE x IS NULL` | `df[\"x\"].isna()` | `pl.col(\"x\").is_null()` |\n"
     "| Row count | `COUNT(*)` | `len(df)` or `df.shape[0]` | `df.height` |\n\n"
     "---\n\n"
-    "**Remember:** SQL retrieves data from databases. Pandas and Polars analyze data in Python. "
-    "Together, they form the bridge from databases to modern data science."
+    "**Remember:** SQL retrieves data from databases. **Pandas** is the primary Python tool in this module; "
+    "Polars is an optional modern comparison. Together, they form the bridge from databases to modern data science."
+))
+
+# --- Why Learn Polars (under Reference Guide) ---
+cells.append(md("### Why Learn Polars?"))
+cells.append(md(
+    "> Reminder: Polars is **optional** in this module. Use this section for context, not as a second required syllabus.\n\n"
+    "**Performance.** Polars is written in Rust and uses parallel execution. On datasets with "
+    "millions of rows, it is often significantly faster than Pandas.\n\n"
+    "**Modern data science.** New tools and courses (including updated Berkeley Data Science "
+    "material) are introducing Polars alongside Pandas.\n\n"
+    "**Growing adoption.** Companies handling large-scale analytics increasingly evaluate Polars "
+    "for ETL and exploratory analysis pipelines.\n\n"
+    "**Industry relevance.** SQL remains the language of databases; Pandas remains the most common "
+    "Python tabular library; Polars is the fast, modern alternative worth knowing.\n\n"
+    "**Practical advice:** Master SQL first (done!). Add Pandas for the Python ecosystem. "
+    "Focus on **Pandas** for this course. Revisit Polars later when you need speed or cleaner chained expressions — you do not need to learn SQL, Pandas, and Polars all at once."
 ))
 
 cells.append(md(f"{HR}\n\n{HR_GOLD}"))

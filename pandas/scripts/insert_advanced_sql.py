@@ -83,22 +83,21 @@ def practice(prompt: str, solution: str, placeholder: str = "# Your code here\n"
 def section_cells():
     out = []
 
-    out.append(md_block(f"{HR}\n\n## 8. Advanced SQL Concepts in pandas and Polars"))
+    out.append(md_block(f"{HR}\n\n## 6. Advanced SQL Translations"))
     out.append(
         md_block(
             "You already mapped basic SQL (`SELECT`, `WHERE`, `GROUP BY`, inner `JOIN`) to DataFrames.\n\n"
             "This section covers **advanced SQL ideas** you likely saw near the end of your SQL course:\n\n"
-            "- Outer joins (`LEFT`, `RIGHT`, `FULL`)\n"
+            "- Outer joins (`LEFT JOIN`, `RIGHT JOIN`, `FULL OUTER JOIN`)\n"
             "- Set operations (`UNION`, `UNION ALL`, `INTERSECT`, `EXCEPT`)\n"
             "- Subqueries\n"
             "- Recursive CTEs for hierarchical data\n\n"
-            "> **Goal:** See each idea first as **SQL**, then as **pandas**, then as **Polars**, "
-            "using small example tables you can inspect by eye."
+            "> **Goal:** See each idea first as **SQL**, then as **pandas** (required). **Polars** side-by-side examples are optional comparison only. Use small example tables you can inspect by eye."
         )
     )
 
     # --- Outer joins ---
-    out.append(md_block("### Left, Right, and Full Outer Joins"))
+    out.append(md_block("### 6.1 Outer Joins"))
     out.append(
         md_block(
             "Inner joins keep only matching keys. Outer joins also keep **unmatched** rows and fill missing side with `NULL`.\n\n"
@@ -153,11 +152,16 @@ def section_cells():
             "|------|---------------------------|------------------|\n"
             "| `LEFT` | Left table (`employees`) | No matching `departments` row |\n"
             "| `RIGHT` | Right table (`departments`) | No matching `employees` row |\n"
-            "| `FULL` | Both tables | Either side has no match |"
+            "| `FULL OUTER JOIN` | Both tables | Either side has no match |"
         )
     )
 
-    out.append(md_block("**pandas** — `how=\"left\"`, `how=\"right\"`, `how=\"outer\"`"))
+    out.append(
+        md_block(
+            '**pandas** — `how="left"`, `how="right"`, and `how="outer"` map to SQL Server '
+            "`LEFT JOIN`, `RIGHT JOIN`, and `FULL OUTER JOIN`."
+        )
+    )
     out.append(
         code(
             'print("LEFT JOIN")\n'
@@ -171,14 +175,28 @@ def section_cells():
         )
     )
 
-    out.append(md_block("**Polars** — same ideas with `how=` on `.join()`"))
+    out.append(
+        md_block(
+            "**Polars** — `how=\"left\"` for `LEFT JOIN`; `how=\"full\"` for `FULL OUTER JOIN`.\n\n"
+            "For teaching `RIGHT JOIN`, Polars does not need a special right join: reverse the tables and use a "
+            "**left join**. Depending on your installed Polars version, `how=\"right\"` may not be supported "
+            "consistently — the reversed left join is safer and less version-dependent.\n\n"
+            "> A right join is equivalent to switching the table order and performing a left join."
+        )
+    )
     out.append(
         code(
             'print("LEFT JOIN")\n'
             'display(employees_pl.join(departments_pl, on="dept_id", how="left"))\n'
             "\n"
             'print("RIGHT JOIN")\n'
-            'display(employees_pl.join(departments_pl, on="dept_id", how="right"))\n'
+            "display(\n"
+            "    departments_pl.join(\n"
+            "        employees_pl,\n"
+            "        on=\"dept_id\",\n"
+            "        how=\"left\",\n"
+            "    )\n"
+            ")\n"
             "\n"
             'print("FULL OUTER JOIN")\n'
             'display(employees_pl.join(departments_pl, on="dept_id", how="full", coalesce=True))'
@@ -198,10 +216,15 @@ def section_cells():
     )
 
     # --- Set ops ---
-    out.append(md_block("### UNION ALL, UNION, INTERSECT, and EXCEPT"))
+    out.append(md_block("### 6.2 Set Operations"))
     out.append(
         md_block(
             "Set operations combine rows from two result sets with the **same columns**.\n\n"
+            "**Important:** `UNION`, `INTERSECT`, and `EXCEPT` compare the **complete selected row**, "
+            "not only one column. For example, in our sample data `(4, \"HIST\")` is the duplicate row in "
+            "`spring` — not simply student `4`.\n\n"
+            "For SQL set operations, both queries must return the **same number of columns in the same order**, "
+            "with **compatible data types**.\n\n"
             "- **`UNION ALL`** — stack all rows; keep duplicates\n"
             "- **`UNION`** — stack rows; **remove duplicates**\n"
             "- **`INTERSECT`** — rows that appear in **both**\n"
@@ -265,10 +288,21 @@ def section_cells():
         code(
             'union_all = pd.concat([fall, spring], ignore_index=True)\n'
             'union_distinct = pd.concat([fall, spring], ignore_index=True).drop_duplicates()\n'
-            'intersect = pd.merge(fall, spring, on=["student_id", "course"], how="inner").drop_duplicates()\n'
+            "intersect = pd.merge(\n"
+            "    fall.drop_duplicates(),\n"
+            "    spring.drop_duplicates(),\n"
+            '    on=["student_id", "course"],\n'
+            '    how="inner",\n'
+            ")\n"
             "\n"
             "except_rows = (\n"
-            '    pd.merge(fall, spring, on=["student_id", "course"], how="left", indicator=True)\n'
+            "    fall.drop_duplicates()\n"
+            "    .merge(\n"
+            "        spring.drop_duplicates(),\n"
+            '        on=["student_id", "course"],\n'
+            '        how="left",\n'
+            "        indicator=True,\n"
+            "    )\n"
             '    .query(\'_merge == "left_only"\')\n'
             '    .drop(columns="_merge")\n'
             ")\n"
@@ -285,8 +319,14 @@ def section_cells():
         code(
             "union_all_pl = pl.concat([fall_pl, spring_pl])\n"
             "union_pl = pl.concat([fall_pl, spring_pl]).unique()\n"
-            'intersect_pl = fall_pl.join(spring_pl, on=["student_id", "course"], how="inner").unique()\n'
-            'except_pl = fall_pl.join(spring_pl, on=["student_id", "course"], how="anti")\n'
+            "intersect_pl = (\n"
+            "    fall_pl.unique()\n"
+            '    .join(spring_pl.unique(), on=["student_id", "course"], how="inner")\n'
+            ")\n"
+            "except_pl = (\n"
+            "    fall_pl.unique()\n"
+            '    .join(spring_pl.unique(), on=["student_id", "course"], how="anti")\n'
+            ")\n"
             "\n"
             'print("UNION ALL"); display(union_all_pl)\n'
             'print("UNION"); display(union_pl)\n'
@@ -297,12 +337,10 @@ def section_cells():
 
     out.append(
         md_block(
-            "| Operation | SQL | Pandas | Polars |\n"
-            "|-----------|-----|--------|--------|\n"
-            "| Keep all rows (dupes OK) | `UNION ALL` | `pd.concat([a, b])` | `pl.concat([a, b])` |\n"
-            "| Stack + distinct | `UNION` | `pd.concat(...).drop_duplicates()` | `pl.concat(...).unique()` |\n"
-            "| Rows in both | `INTERSECT` | `pd.merge(..., how=\"inner\")` | `join(..., how=\"inner\")` |\n"
-            "| In first, not second | `EXCEPT` | `merge(..., indicator=True)` then keep `left_only` | `join(..., how=\"anti\")` |"
+            "**Set operations recap:** `UNION ALL` stacks rows; `UNION` drops duplicates; "
+            "`INTERSECT` keeps rows in both sets; `EXCEPT` keeps rows only in the first set. "
+            "Each operation compares the **complete selected row** — see **Section 8 — Reference Guide** "
+            "for the pandas/Polars mapping."
         )
     )
 
@@ -318,13 +356,15 @@ def section_cells():
     )
 
     # --- Subqueries ---
-    out.append(md_block("### Subqueries"))
+    out.append(md_block("### 6.3 Subqueries"))
     out.append(
         md_block(
             "In SQL, a **subquery** is a query nested inside another query.\n\n"
             "In Python, that often becomes:\n\n"
             "- an **intermediate DataFrame** (list of keys), or\n"
-            "- a **scalar value** (one number), which you then use to filter.\n\n"
+            "- a **scalar value** (one number), which you then use to filter, or\n"
+            "- a **per-group value** from a **correlated subquery**, often via `groupby().transform()` "
+            "in pandas or `.over()` in Polars.\n\n"
             "We will reuse the AP `invoices_pd` / `vendors_pd` tables already loaded."
         )
     )
@@ -429,6 +469,56 @@ def section_cells():
         )
     )
 
+    out.append(
+        md_block(
+            "#### Example C — correlated subquery\n\n"
+            "**SQL**\n"
+            "```sql\n"
+            "SELECT i.InvoiceID, i.VendorID, i.InvoiceTotal\n"
+            "FROM Invoices i\n"
+            "WHERE i.InvoiceTotal >\n"
+            "(\n"
+            "    SELECT AVG(i2.InvoiceTotal)\n"
+            "    FROM Invoices i2\n"
+            "    WHERE i2.VendorID = i.VendorID\n"
+            ");\n"
+            "```\n\n"
+            "A **correlated subquery** references a column from the outer query (`i.VendorID`). "
+            "The inner `AVG` is computed **per vendor**, not for the whole table."
+        )
+    )
+
+    out.append(md_block("**pandas** — `transform()` computes one average per vendor for every row"))
+    out.append(
+        code(
+            'vendor_average = invoices_pd.groupby("VendorID")["InvoiceTotal"].transform("mean")\n'
+            "\n"
+            "invoices_above_vendor_average = invoices_pd[\n"
+            '    invoices_pd["InvoiceTotal"] > vendor_average\n'
+            '][["InvoiceID", "VendorID", "InvoiceTotal"]]\n'
+            "\n"
+            "invoices_above_vendor_average.head()"
+        )
+    )
+
+    out.append(md_block('**Polars** — window expression with `.over("VendorID")`'))
+    out.append(
+        code(
+            "(\n"
+            "    invoices_pl\n"
+            "    .with_columns(\n"
+            '        pl.col("InvoiceTotal")\n'
+            "        .mean()\n"
+            '        .over("VendorID")\n'
+            '        .alias("VendorAverage")\n'
+            "    )\n"
+            '    .filter(pl.col("InvoiceTotal") > pl.col("VendorAverage"))\n'
+            '    .select("InvoiceID", "VendorID", "InvoiceTotal", "VendorAverage")\n'
+            "    .head()\n"
+            ")"
+        )
+    )
+
     out.extend(
         practice(
             "**Check Your Understanding:** In one sentence, explain what a SQL subquery usually becomes "
@@ -440,7 +530,7 @@ def section_cells():
     )
 
     # --- Recursive CTE ---
-    out.append(md_block("### Recursive CTEs and Hierarchical Data"))
+    out.append(md_block("### 6.4 Recursive CTEs"))
     out.append(
         md_block(
             "Org charts are **hierarchical**: each employee may report to a manager, who reports to another manager.\n\n"
@@ -674,18 +764,29 @@ def main():
                 ]
             break
 
-    # Find insertion point: before "## 8. Pandas vs Polars"
+    # Find insertion point: before section 9 recap (or legacy side-by-side heading)
     insert_at = None
     for i, cell in enumerate(cells):
         text = source_text(cell)
-        if "## 8. Pandas vs Polars" in text:
+        if any(
+            marker in text
+            for marker in (
+                "### Advanced Section Recap",
+                "## 7. Practice",
+                "## 9. Advanced Section Recap",
+                "## 8. Pandas vs Polars",
+            )
+        ):
             insert_at = i
             break
     if insert_at is None:
-        raise SystemExit("Could not find section 8 insertion point")
+        raise SystemExit("Could not find advanced-section insertion point")
 
     # Skip if already inserted
-    already = any("Advanced SQL Concepts" in source_text(c) for c in cells)
+    already = any(
+        "Advanced SQL Translations" in source_text(c) or "Advanced SQL Concepts" in source_text(c)
+        for c in cells
+    )
     if already:
         print("Advanced SQL section already present — skipping insert")
     else:
@@ -695,11 +796,17 @@ def main():
 
     # Renumber later section headings if needed
     renames = [
-        ("## 8. Pandas vs Polars — Side-by-Side", "## 9. Pandas vs Polars — Side-by-Side"),
-        ("## 9. Practice Problems", "## 10. Practice Problems"),
-        ("## 10. Mini Challenge", "## 11. Mini Challenge"),
-        ("## 11. Why Learn Polars?", "## 12. Why Learn Polars?"),
-        ("## 12. Cheat Sheet", "## 13. Cheat Sheet"),
+        ("## 9. Advanced Section Recap", "### Advanced Section Recap"),
+        ("## 8. Advanced Section Recap", "### Advanced Section Recap"),
+        ("## 10. Practice Problems", "## 7. Practice"),
+        ("## 9. Practice Problems", "## 7. Practice"),
+        ("## 7. Practice Problems", "## 7. Practice"),
+        ("## 11. Mini Challenge", "### Mini Challenge"),
+        ("## 10. Mini Challenge", "### Mini Challenge"),
+        ("## 12. Why Learn Polars?", "### Why Learn Polars?"),
+        ("## 11. Why Learn Polars?", "### Why Learn Polars?"),
+        ("## 13. Cheat Sheet", "## 8. Reference Guide"),
+        ("## 12. Cheat Sheet", "## 8. Reference Guide"),
     ]
     for cell in cells:
         if cell.get("cell_type") != "markdown":
@@ -715,17 +822,19 @@ def main():
         if cell.get("cell_type") != "markdown":
             continue
         text = source_text(cell)
-        if "## 13. Cheat Sheet" in text or ("## 12. Cheat Sheet" in text and "Advanced SQL Concepts" not in "".join(source_text(c) for c in cells)):
+        if "## 8. Reference Guide" in text or "Cheat Sheet" in text:
             pass
-        if "Cheat Sheet" in text and "UNION ALL" not in text:
+        if ("Reference Guide" in text or "Cheat Sheet" in text) and "UNION ALL" not in text and "Bookmark this page" in text:
             # append advanced rows before Remember line if present
             extra = (
-                "| Left/right/full join | `LEFT/RIGHT/FULL JOIN` | `pd.merge(..., how=...)` | `df.join(..., how=...)` |\n"
+                "| Left/right/full outer join | `LEFT/RIGHT/FULL OUTER JOIN` | `pd.merge(..., how=...)` | "
+                "`join(..., how=\"left/full\")`; reverse tables for RIGHT JOIN |\n"
                 "| Union all | `UNION ALL` | `pd.concat([a, b])` | `pl.concat([a, b])` |\n"
                 "| Union distinct | `UNION` | `pd.concat(...).drop_duplicates()` | `pl.concat(...).unique()` |\n"
-                "| Intersect | `INTERSECT` | `pd.merge(..., how=\"inner\")` | `join(..., how=\"inner\")` |\n"
-                "| Except | `EXCEPT` | `merge(..., indicator=True)` | `join(..., how=\"anti\")` |\n"
+                "| Intersect | `INTERSECT` | `merge` on distinct rows | `unique().join(..., how=\"inner\")` |\n"
+                "| Except | `EXCEPT` | `merge` + `indicator` on distinct rows | `unique().join(..., how=\"anti\")` |\n"
                 "| Subquery IN | `WHERE x IN (SELECT...)` | `.isin(intermediate)` | `join(..., how=\"semi\")` |\n"
+                "| Correlated subquery | per-group filter | `.groupby().transform()` | `.over()` |\n"
             )
             new_src = []
             for s in cell["source"]:
@@ -739,29 +848,27 @@ def main():
             cell["source"] = new_src
             break
 
-    # Comparison table section: add a note pointing to advanced section
+    # Replace duplicate side-by-side comparison table with a brief recap (cheat sheet is canonical)
+    recap_body = (
+        "In **Section 6** you translated four advanced SQL topics into Python:\n\n"
+        "- **Outer joins** — keep unmatched rows from one or both tables "
+        "(`LEFT JOIN`, `RIGHT JOIN`, `FULL OUTER JOIN`)\n"
+        "- **Set operations** — combine result sets row-by-row (`UNION`, `INTERSECT`, `EXCEPT`); "
+        "SQL compares **complete rows**\n"
+        "- **Subqueries** — nested filters become intermediate DataFrames, scalars, or per-group values "
+        "(`transform()` / `.over()`)\n"
+        "- **Recursive CTEs** — hierarchical walks become a **custom loop** with repeated joins "
+        "(not built-in pandas/Polars syntax)\n\n"
+        "> **Quick lookup:** **Section 8 — Reference Guide** has the full SQL ↔ pandas ↔ Polars reference table. "
+        "Bookmark it when you need syntax while working on practice problems."
+    )
     for cell in cells:
         if cell.get("cell_type") != "markdown":
             continue
         text = source_text(cell)
-        if "Pandas vs Polars — Side-by-Side" in text and "Outer joins" not in text:
-            # The content cell after the heading
-            pass
-        if text.startswith("| Operation | SQL | Pandas | Polars |") and "FULL JOIN" not in text:
-            lines = cell["source"]
-            # insert advanced rows before the closing callout if any
-            insert_lines = [
-                "| Outer join | `LEFT/RIGHT/FULL JOIN` | `pd.merge(..., how=\"left/right/outer\")` | `df.join(..., how=\"left/right/full\")` |\n",
-                "| Union / Union all | `UNION` / `UNION ALL` | `concat` (+ `drop_duplicates`) | `concat` (+ `unique`) |\n",
-                "| Except | `EXCEPT` | `merge` + `indicator` | `join(..., how=\"anti\")` |\n",
-            ]
-            new_lines = []
-            for s in lines:
-                if s.startswith("> **When to use which?"):
-                    new_lines.extend(insert_lines)
-                    new_lines.append("\n")
-                new_lines.append(s)
-            cell["source"] = new_lines
+        if text.startswith("| Operation | SQL | Pandas | Polars |") and "Select columns" in text:
+            cell["source"] = md_block(recap_body)["source"]
+            break
 
     nb["cells"] = cells
     NB_PATH.write_text(json.dumps(nb, indent=1, ensure_ascii=False) + "\n")
