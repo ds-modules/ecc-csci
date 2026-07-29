@@ -150,7 +150,12 @@ cells.append(md(
     "## Importing Libraries\n\n"
     "> **Kernel check:** If imports fail, use **Kernel → Change Kernel** and select "
     "**Python (ecc-csci)** or your project's `.venv` interpreter - not the system Python.\n\n"
+    "If Polars (or pandas) is missing, run the install cell below once, then restart the kernel if needed.\n\n"
     "**Pandas** and **Polars** are imported with standard aliases:"
+))
+cells.append(code(
+    "# Run once if imports fail (installs into the active notebook kernel)\n"
+    "%pip install -q pandas polars numpy"
 ))
 cells.append(code("import pandas as pd\nimport polars as pl\nimport numpy as np\n\nprint(pd.__version__)"))
 
